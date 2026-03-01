@@ -1,43 +1,32 @@
 import React, { useState, useEffect } from 'react';
 
 export default function App() {
+  const [scrolled, setScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
-  const [copyText, setCopyText] = useState('9Neabo5MCkgNm8c64bwjtBhwZgkK7V9s3CfScWbrpump');
-  const [activeNav, setActiveNav] = useState('MEW');
-  const [chartData, setChartData] = useState(Array.from({ length: 12 }, () => Math.floor(Math.random() * 80) + 20));
-  const [terminalLines, setTerminalLines] = useState(['> INITIALIZING SOU_AGENT_V4', '> CONNECTION ESTABLISHED', '> SCANNING MEMPOOL...']);
+  const [copyText, setCopyText] = useState('0x69420...CATO');
+  const [glitch, setGlitch] = useState(false);
 
   useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 30);
     const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('scroll', handleScroll);
     window.addEventListener('resize', handleResize);
     
-    // Original glitch effect interval - preserved
-    const glitchInterval = setInterval(() => {
-      // Assuming 'glitch' state is managed elsewhere or simplified for this example
-      // Original code had a 'glitch' state useState, which is now missing, so commenting this out
-      // setGlitch(true);
-      // setTimeout(() => setGlitch(false), 150);
+    const interval = setInterval(() => {
+      setGlitch(true);
+      setTimeout(() => setGlitch(false), 150);
     }, 4000);
 
-    const chartInterval = setInterval(() => {
-      setChartData(prev => [...prev.slice(1), Math.floor(Math.random() * 80) + 20]);
-      if (activeNav === 'SOU') {
-        const events = ['BUY ORDER EXECUTED', 'LIQUIDITY DETECTED', 'PRICE ALERT: +2.4%', 'PEER NODE SYNCED', 'BLOCK_MINED: #9822'];
-        setTerminalLines(prev => [...prev.slice(-8), `> ${events[Math.floor(Math.random() * events.length)]}`]);
-      }
-    }, 3000);
-
     return () => {
+      window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleResize);
-      clearInterval(glitchInterval);
-      clearInterval(chartInterval);
+      clearInterval(interval);
     };
-  }, [activeNav]);
+  }, []);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText('9Neabo5MCkgNm8c64bwjtBhwZgkK7V9s3CfScWbrpump');
     setCopyText('SYSTEM_COPIED');
-    setTimeout(() => setCopyText('9Neabo5MCkgNm8c64bwjtBhwZgkK7V9s3CfScWbrpump'), 2000);
+    setTimeout(() => setCopyText('0x69420...CATO'), 2000);
   };
 
   const colors = {
@@ -47,34 +36,18 @@ export default function App() {
     dark: '#050505',
     grid: '#111111',
     text: '#ffffff',
-    glass: 'rgba(255, 255, 255, 0.05)',
   };
 
-  const navItemStyle = (active) => ({
-    padding: '0 20px',
-    cursor: 'pointer',
-    color: active ? colors.yellow : colors.text,
-    borderBottom: active ? `4px solid ${colors.yellow}` : '4px solid transparent',
-    fontSize: '0.9rem',
-    fontWeight: '900',
-    letterSpacing: '2px',
-    transition: 'all 0.2s ease',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    background: active ? `${colors.yellow}11` : 'transparent',
-    textTransform: 'uppercase',
+  const pixelBorderStyle = (color) => ({
+    boxShadow: `
+      0 -4px 0 0 ${color},
+      0 4px 0 0 ${color},
+      -4px 0 0 0 ${color},
+      4px 0 0 0 ${color}
+    `,
+    margin: '4px',
   });
 
-  const dashboardCardStyle = {
-    backgroundColor: colors.glass,
-    border: `1px solid ${colors.neon}44`,
-    padding: '24px',
-    position: 'relative',
-    backdropFilter: 'blur(10px)',
-  };
-
-  // Fix: define buttonStyle (smallest possible change)
   const buttonStyle = (color = colors.neon, solid = true) => ({
     backgroundColor: solid ? color : 'transparent',
     color: solid ? colors.dark : color,
@@ -89,79 +62,17 @@ export default function App() {
     textTransform: 'uppercase',
     textDecoration: 'none',
     display: 'inline-block',
-    boxShadow: solid ? `0 6px 20px ${color}44` : 'none',
+    ...pixelBorderStyle(solid ? 'black' : color),
     transform: 'skewX(-10deg)',
   });
 
-  const PageMew = () => (
-    <div style={{ animation: 'fadeIn 0.5s ease' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr', gap: '20px', marginBottom: '40px' }}>
-        <div style={dashboardCardStyle}>
-          <h3 style={{ color: colors.neon, marginTop: 0 }}>NETWORK_TRAFFIC_LIVE</h3>
-          <div style={{ height: '200px', width: '100%', marginTop: '20px' }}>
-            <svg width="100%" height="100%" style={{ overflow: 'visible' }}>
-              <path
-                d={`M ${chartData.map((d, i) => `${(i / (chartData.length - 1)) * 1000},${200 - (d * 2)}`).join(' L ')}`}
-                fill="none"
-                stroke={colors.neon}
-                strokeWidth="3"
-                vectorEffect="non-scaling-stroke"
-              />
-              {chartData.map((d, i) => (
-                <circle key={i} cx={`${(i / (chartData.length - 1)) * 100}%`} cy={200 - (d * 2)} r="4" fill={colors.neon} />
-              ))}
-            </svg>
-          </div>
-        </div>
-        <div style={dashboardCardStyle}>
-          <h3 style={{ color: colors.hot, marginTop: 0 }}>METRICS_RAW</h3>
-          {['CPU: 88%', 'MEM: 4.2GB', 'PEERS: 124', 'LATENCY: 12ms'].map((m, i) => (
-            <div key={i} style={{ marginBottom: '10px', fontSize: '0.9rem', borderBottom: '1px solid #222', paddingBottom: '5px' }}>{m}</div>
-          ))}
-        </div>
-      </div>
-      {/* Assuming the rest of the PageMew content was like cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '20px' }}>
-        {['MODUL_01: SYSTEM_INTEGRITY', 'MODUL_02: DATA_ENCRYPTION', 'MODUL_03: QUANTUM_LEAP'].map((item, i) => (
-          <div key={i} style={dashboardCardStyle}>
-            <h4 style={{ color: colors.yellow, marginTop: 0 }}>{item}</h4>
-            <p style={{ fontSize: '0.8rem', color: '#aaa' }}>Status: ONLINE</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
-  const PageSou = () => (
-    <div style={{ animation: 'fadeIn 0.5s ease' }}>
-      <div style={dashboardCardStyle}>
-        <h3 style={{ color: colors.yellow, marginTop: 0 }}>TERMINAL_OUTPUT</h3>
-        <div style={{ height: '300px', overflowY: 'scroll', backgroundColor: '#000', padding: '15px', fontSize: '0.9rem' }}>
-          {terminalLines.map((line, i) => (
-            <div key={i} style={{ whiteSpace: 'pre-wrap', color: line.includes('ERROR') ? colors.hot : colors.text }}>{line}</div>
-          ))}
-          <div style={{ color: colors.neon }}>_</div>
-        </div>
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '20px', marginTop: '20px' }}>
-        <div style={dashboardCardStyle}>
-          <h3 style={{ color: colors.neon, marginTop: 0 }}>TRADE_CONTROL</h3>
-          <button style={{ ...buttonStyle(colors.hot), width: '100%', marginBottom: '10px' }}>EXECUTE_BUY_</button>
-          <button style={{ ...buttonStyle(colors.yellow), width: '100%' }}>INITIATE_SELL_</button>
-        </div>
-        <div style={dashboardCardStyle}>
-          <h3 style={{ color: colors.text, marginTop: 0 }}>LOGS_EVENTS</h3>
-          {[
-            'CONTRACT_DEPLOYED',
-            'LP_LOCKED',
-            'OWNERSHIP_RENOWNNCED'
-          ].map((log, i) => (
-            <div key={i} style={{ marginBottom: '10px', fontSize: '0.9rem' }}>// {log}</div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+  const sectionStyle = {
+    padding: '80px 20px',
+    maxWidth: '1200px',
+    margin: '0 auto',
+    position: 'relative',
+    zIndex: 2,
+  };
 
   return (
     <div style={{ 
@@ -202,24 +113,27 @@ export default function App() {
           <span style={{ color: colors.yellow, letterSpacing: '4px' }}>CATO_OS</span>
         </div>
         {!isMobile && (
-          <div style={{ display: 'flex', gap: '30px' }}>
-            {['MISSION', 'DATA', 'CORE'].map(link => (
+          <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+            {['MISSION', 'DATA', 'CORE', 'TOKENOMICS', 'FAQ'].map(link => (
               <a key={link} href="#" style={{ color: colors.neon, textDecoration: 'none', fontWeight: 'bold', fontSize: '0.8rem' }}>{`> ${link}`}</a>
             ))}
+            {/* additional navbar buttons */}
+            <a href="#buy" style={{ ...buttonStyle(colors.yellow, false), padding: '6px 12px', fontSize: '0.8rem', transform: 'skewX(0deg)', border: `2px solid ${colors.yellow}`, boxShadow: 'none', marginLeft: '10px' }}>BUY</a>
+            <a href="#chart" style={{ ...buttonStyle(colors.neon, false), padding: '6px 12px', fontSize: '0.8rem', transform: 'skewX(0deg)', border: `2px solid ${colors.neon}`, boxShadow: 'none' }}>CHART</a>
           </div>
         )}
-        <button style={{ ...buttonStyle(colors.hot), padding: '8px 16px', fontSize: '0.8rem' }}>ACCESS_TERMINAL</button>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <button style={{ ...buttonStyle(colors.hot), padding: '8px 16px', fontSize: '0.8rem' }}>ACCESS_TERMINAL</button>
+          <button style={{ ...buttonStyle(colors.yellow), padding: '8px 12px', fontSize: '0.8rem' }}>CONNECT_WALLET</button>
+        </div>
       </nav>
 
       {/* HERO */}
       <header style={{ 
+        ...sectionStyle, 
         paddingTop: '180px',
         textAlign: 'center',
-        minHeight: '80vh',
-        maxWidth: '1200px',
-        margin: '0 auto',
-        position: 'relative',
-        zIndex: 2,
+        minHeight: '80vh'
       }}>
         <div style={{ position: 'relative', display: 'inline-block' }}>
           <h1 style={{ 
@@ -227,7 +141,7 @@ export default function App() {
             margin: 0, 
             lineHeight: 0.8,
             color: colors.text,
-            textShadow: `0px 0px ${colors.hot}, 0px 0px ${colors.neon}`,
+            textShadow: `${glitch ? '4px' : '0px'} 0px ${colors.hot}, -${glitch ? '4px' : '0px'} 0px ${colors.neon}`,
             fontWeight: '900',
             letterSpacing: '-10px'
           }}>
@@ -288,13 +202,7 @@ export default function App() {
       </header>
 
       {/* DATA PACKS */}
-      <section style={{
-        padding: '80px 20px',
-        maxWidth: '1200px',
-        margin: '0 auto',
-        position: 'relative',
-        zIndex: 2,
-      }}>
+      <section style={sectionStyle}>
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '40px' }}>
           {[
             { id: '01', title: 'CYBERNETIC_STRIKE', desc: 'Instant execution logic for maximum market impact.' },
@@ -317,14 +225,7 @@ export default function App() {
       </section>
 
       {/* METRICS */}
-      <section style={{ 
-        padding: '80px 20px',
-        maxWidth: '1200px',
-        margin: '0 auto',
-        position: 'relative',
-        zIndex: 2,
-        borderTop: `1px solid ${colors.grid}` 
-      }}>
+      <section style={{ ...sectionStyle, borderTop: `1px solid ${colors.grid}` }}>
         <h2 style={{ color: colors.hot, textAlign: 'center', fontSize: '2rem', marginBottom: '60px' }}>NETWORK_STATS</h2>
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)', gap: '20px' }}>
           {[
@@ -342,26 +243,13 @@ export default function App() {
       </section>
 
       {/* JOIN */}
-      <section style={{ 
-        padding: '80px 20px',
-        maxWidth: '1200px',
-        margin: '0 auto',
-        position: 'relative',
-        zIndex: 2,
-        textAlign: 'center' 
-      }}>
+      <section style={{ ...sectionStyle, textAlign: 'center' }}>
         <div style={{ 
           border: `4px solid ${colors.yellow}`, 
           padding: '80px 20px', 
           backgroundColor: '#000',
           boxShadow: `inset 0 0 50px ${colors.yellow}22`,
-          boxShadow: `
-            0 -4px 0 0 ${colors.yellow},
-            0 4px 0 0 ${colors.yellow},
-            -4px 0 0 0 ${colors.yellow},
-            4px 0 0 0 ${colors.yellow}
-          `,
-          margin: '4px',
+          ...pixelBorderStyle(colors.yellow)
         }}>
           <h2 style={{ fontSize: '3rem', margin: '0 0 20px 0', color: colors.yellow }}>INITIALIZE_CONNECTION</h2>
           <p style={{ color: colors.neon, marginBottom: '40px' }}>JOIN THE CRYPTO-RESISTANCE TODAY.</p>
@@ -377,34 +265,6 @@ export default function App() {
         <div style={{ color: colors.hot, fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '10px' }}>CATO_FOUNDATION_</div>
         <p>DECENTRALIZED_CAT_ENTITY // NO_VALUE // NO_LIMITS</p>
         <p style={{ marginTop: '20px' }}>RUNNING_ON_BLOCKCHAIN_PROTOCOL_V4.2.0</p>
-        
-        {/* Footer Buttons */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginTop: '30px' }}>
-          <a 
-            href="https://twitter.com/yourproject" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            style={{ ...buttonStyle(colors.neon, false), padding: '8px 16px', fontSize: '0.7rem', transform: 'skewX(0deg)', border: `2px solid ${colors.neon}`, boxShadow: 'none' }}
-          >
-            TWITTER
-          </a>
-          <a 
-            href="https://t.me/yourproject" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            style={{ ...buttonStyle(colors.yellow, false), padding: '8px 16px', fontSize: '0.7rem', transform: 'skewX(0deg)', border: `2px solid ${colors.yellow}`, boxShadow: 'none' }}
-          >
-            TELEGRAM
-          </a>
-          <a 
-            href="https://dexscreener.com/youchain/yourtoken" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            style={{ ...buttonStyle(colors.hot, false), padding: '8px 16px', fontSize: '0.7rem', transform: 'skewX(0deg)', border: `2px solid ${colors.hot}`, boxShadow: 'none' }}
-          >
-            CHART
-          </a>
-        </div>
       </footer>
     </div>
   );
